@@ -1,0 +1,27 @@
+{
+  "name": "expense-management-system",
+  "version": "1.0.0",
+  "description": "Expense Management System in the MERN stack",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "nodemon": "nodemon server.js --ignore client",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run nodemon\" \"npm run client\""
+  },
+  "keywords": [],
+  "author": "Ajeet Yadav",
+  "license": "MIT",
+  "dependencies": {
+    "antd": "^5.0.2",
+    "colors": "^1.4.0",
+    "concurrently": "^7.6.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "i": "^0.3.7",
+    "mongoose": "^6.7.2",
+    "morgan": "^1.10.0",
+    "nodemon": "^2.0.20"
+  }
+}
