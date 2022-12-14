@@ -26,6 +26,9 @@ const endPoint = process.env.API_END_POINT;
 // user routes
 app.use(endPoint + 'users', require('./routes/userRoute'));
 
+//transaction routes
+app.use(endPoint + 'transaction', require('./routes/transactionRoute'));
+
 // app.use('/api/v1/something',require('./routes/somethingRoute'));
 /**
  * End of Routing

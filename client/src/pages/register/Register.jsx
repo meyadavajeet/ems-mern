@@ -1,5 +1,5 @@
 import { Button, Form, Input, message } from 'antd';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './register.css';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -26,6 +26,13 @@ const Register = () => {
   const onFinishFailed = (errorInfo) => {
     console.log('Failed:', errorInfo);
   };
+
+  //if user found on local storage then redirect user to homepage
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/");
+    }
+  }, [navigate]);
   return (
     <>
       <div className="container p4">
