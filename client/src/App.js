@@ -1,5 +1,5 @@
 // import logo from './logo.svg';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import HomePage from './pages/home/HomePage';
 import Register from './pages/register/Register';
@@ -11,7 +11,13 @@ function App() {
     <>
 
       <Routes>
-        <Route path="/" exact element={<HomePage />} />
+        <Route path="/" exact element={
+          <ProtectedRoutes>
+            <HomePage />
+          </ProtectedRoutes>
+        }
+
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         {/* <Route path="/user"  element={<User />} /> */}
@@ -19,6 +25,11 @@ function App() {
 
     </>
   );
+}
+
+export const ProtectedRoutes = (props) => {
+  if (localStorage.getItem("user")) return props.children;
+  else return <Navigate to="/login" />
 }
 
 export default App;

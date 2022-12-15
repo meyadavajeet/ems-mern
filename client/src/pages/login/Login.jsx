@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from 'react'
 import { Button, Form, Input, message } from 'antd'
-import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
@@ -10,11 +10,10 @@ const Login = () => {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      console.log('Success:', values);
       const { data } = await axios.post('/users/login', values);
       setLoading(false);
       message.success("Login Success");
-      localStorage.setItem('user', JSON.stringify({ ...data, password: '' }));
+      localStorage.setItem('user', JSON.stringify({ ...data.data, password: '' }));
       navigate("/");
     } catch (err) {
       setLoading(false);
@@ -25,6 +24,14 @@ const Login = () => {
 
     console.log('Failed:', errorInfo);
   };
+
+  //if user found on local storage then redirect user to homepage
+  useEffect(() => {
+    if (localStorage.getItem("user")) {
+      navigate("/");
+    }
+  }, [navigate]);
+
   return (
     <>
       <div className="container">
@@ -34,7 +41,6 @@ const Login = () => {
             <Form layout="vertical"
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
-              // autoComplete="off"
               initialValues={{ remember: true }}
             >
               <Form.Item
