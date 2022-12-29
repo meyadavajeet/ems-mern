@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import Layout from '../../components/layout/Layout';
-import { Button, Form, Input, message, Modal, Select, TextArea } from 'antd';
+import { Button, Form, Input, message, Modal, Select, Table } from 'antd';
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
 
@@ -11,6 +11,7 @@ import Spinner from '../../components/Spinner';
 const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [allTransactionState, setAllTransactionState] = useState([]);
 
   const showModel = () => {
     setIsModalOpen(true);
@@ -38,6 +39,62 @@ const HomePage = () => {
     console.log('Failed', errorInfo);
   }
 
+  /**
+   * Get all transactions
+   */
+  const getAllTransactions = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      // console.log(user._id,'user id');
+      setIsLoading(true);
+      const response = await axios.post('/transaction/all-transaction', { user_id: user._id });
+      setIsLoading(false);
+      setAllTransactionState(response.data);
+      console.log(response.data);
+
+    } catch (err) {
+      console.error(err);
+      message.error("Facing issue while fetching data!!");
+    }
+  }
+
+  //useEffect Hook
+  useEffect(() => {
+    getAllTransactions()
+  }, []);
+
+  /**
+   * Table in ant design
+   */
+  const columns = [
+    {
+      title: 'Date',
+      dataIndex: 'date'
+    },
+    {
+      title: 'Amount',
+      dataIndex: 'amount'
+    },
+    {
+      title: 'Type',
+      dataIndex: 'type'
+    },
+    {
+      title: 'Categories',
+      dataIndex: 'categories'
+    },
+    {
+      title: 'Reference',
+      dataIndex: 'reference'
+    },
+    {
+      title: 'Description',
+      dataIndex: 'description'
+    },
+    {
+      title: 'Actions'
+    },
+  ]
   return (
     <>
       <Layout>
@@ -48,6 +105,9 @@ const HomePage = () => {
               <button className="btn btn-warning" onClick={showModel}>Add Expanse</button>
             </div>
           </div>
+        </div>
+        <div className='content'>
+          <Table columns={columns} dataSource={allTransactionState} />
         </div>
         {/* start of modal code */}
         <Modal title="Add New Expanse" footer={null} open={isModalOpen} >
