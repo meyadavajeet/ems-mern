@@ -8,7 +8,7 @@ const router = express.Router();
  * routers start
  */
 //GET || GET ALL TRANSACTION
-router.get('/all-transaction', getAllTransaction);
+router.post('/all-transaction', getAllTransaction);
 
 //POST || CREATE TRANSACTION
 router.post('/add-transaction', addNewTransaction);
