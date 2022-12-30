@@ -1,13 +1,33 @@
 const transactionModel = require('../models/transactionModel');
+const moment = require('moment');
 
 // get all transactions callback function
 const getAllTransaction = async (req, res) => {
   try {
-    const transaction = await transactionModel.find({ user_id: req.body.user_id });
-    res.status(200).json(transaction);
+    const { frequency, selectedDate, type, user_id, categories } = req.body;
+    const transaction = await transactionModel.find({
+      ...(frequency !== 'custom' ?
+        {
+          date: {
+            $gt: moment().subtract(Number(frequency), 'd').toDate(),
+          }
+        }
+        :
+        {
+          date: {
+            $gte: selectedDate[0],
+            $lte: selectedDate[1]
+          }
+        }
+      ),
+      user_id: user_id,
+      ...(type !== 'all' && { type }),
+      ...(categories !== 'other' && { categories }),
+    });
+   return res.status(200).json(transaction);
   } catch (error) {
     console.error(error);
-    res.status(500).json(error);
+    return res.status(500).json(error);
   }
 };
 
