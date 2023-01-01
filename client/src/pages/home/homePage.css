@@ -1,7 +1,25 @@
-.transaction-card{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+.transaction-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 15px 20px;
   box-shadow: 0 0 5px;
 }
+
+/*Ant design icons custom css*/
+.anticon svg {
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.active-icon {
+  color: #be3455;
+}
+.inactive-icon {
+  color: gray;
+}
+
+/* .icons-container{
+  border:solid 1px #000000;
+  padding: 2px;
+} */
