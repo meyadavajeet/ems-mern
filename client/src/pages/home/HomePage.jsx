@@ -5,6 +5,8 @@ import { Button, Form, Input, message, Modal, Select, Table, DatePicker } from '
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
 import moment from 'moment';
+import { PieChartOutlined, TableOutlined } from '@ant-design/icons';
+import Analytics from '../../components/analytics/Analytics';
 
 const { RangePicker } = DatePicker;
 
@@ -18,6 +20,7 @@ const HomePage = () => {
   const [selectedDate, setSelectedDate] = useState([]);
   const [type, setType] = useState('all');
   const [categories, setCategories] = useState('other');
+  const [viewData, setViewData] = useState("table");
 
   const showModel = () => {
     setIsModalOpen(true);
@@ -117,7 +120,7 @@ const HomePage = () => {
         <div className="container-fluid">
           <div className="row">
             <div className="transaction-card">
-              <div className="col-sm-3">
+              <div className="col-md-3">
                 <p>Select Frequency</p>
                 <Select value={frequency} onChange={(values) => setFrequency(values)}>
                   <Select.Option value="7">Last 1 Week</Select.Option>
@@ -130,14 +133,14 @@ const HomePage = () => {
                   onChange={(values) => setSelectedDate(values)}
                 />)}
               </div>
-              <div className="col-sm-3">
+              <div className="col-md-2">
                 <p>Select Type</p>
                 <Select value={type} onChange={(values) => setType(values)}>
                   <Select.Option value="income">Income</Select.Option>
                   <Select.Option value="expanse">Expanse</Select.Option>
                 </Select>
               </div>
-              <div className="col-sm-3">
+              <div className="col-md-3 text-center">
                 <p>Categories</p>
                 <Select value={categories} onChange={(values) => setCategories(values)}>
                   <Select.Option value="other">Other</Select.Option>
@@ -151,14 +154,29 @@ const HomePage = () => {
                   <Select.Option value="fees">Fees</Select.Option>
                 </Select>
               </div>
-              <div className="col-sm-3">
+              <div className="col-md-3 text-center ">
+                <p>Analytics</p>
+                <div className='icons-container'>
+                  <TableOutlined
+                    className={`mx-2 ${viewData === 'table' ? 'active-icon' : 'inactive-icon'}`}
+                    onClick={() => setViewData('table')} />
+                  <PieChartOutlined
+                    className={`mx-2 ${viewData === 'analytics' ? 'active-icon' : 'inactive-icon'}`}
+                    onClick={() => setViewData('analytics')} />
+                </div>
+              </div>
+              <div className="col-md-1 ">
                 <button className="btn btn-warning" onClick={showModel}>Add Expanse</button>
               </div>
             </div>
           </div>
         </div>
         <div className="content">
-          <Table columns={columns} dataSource={allTransactionState} />
+          {
+            viewData === 'table'
+              ? <Table className='mt-2 table-responsive' columns={columns} dataSource={allTransactionState} />
+              : <Analytics className='mt-2' allTransaction={allTransactionState} />
+          }
         </div>
         {/* start of modal code */}
         <Modal title="Add New Expanse" footer={null} open={isModalOpen} >
