@@ -4,6 +4,10 @@ import './analytics.css';
 
 const Analytics = ({ allTransaction }) => {
 
+  // category
+  const totalCategories = ["other", "salary", "tip", "project", "movie", "bills", "tax", "medical", "fees"];
+
+
   /**
    * Total Transaction
    */
@@ -46,8 +50,10 @@ const Analytics = ({ allTransaction }) => {
 
   return (
     <>
-      <div className="row mt-2">
+      <div className="row mt-3 text-center">
         {/* Total Transaction */}
+        <div className="col-md-2"></div>
+
         <div className="col-md-4">
           <div className="card">
             <div className="card-header">
@@ -58,7 +64,7 @@ const Analytics = ({ allTransaction }) => {
                 Income : {totalIncomeTransaction.length}
               </h5>
               <h5 className="card-title text-danger">
-                Income : {totalExpanseTransaction.length}
+                Expanse : {totalExpanseTransaction.length}
               </h5>
               <div className="ex-progress-bar">
                 <Progress
@@ -77,7 +83,6 @@ const Analytics = ({ allTransaction }) => {
             </div>
           </div>
         </div>
-
         {/* Total Income  */}
         <div className="col-md-4">
           <div className="card">
@@ -89,7 +94,7 @@ const Analytics = ({ allTransaction }) => {
                 Income : {totalIncomeTurnOver}
               </h5>
               <h5 className="card-title text-danger">
-                Income : {totalExpenseTurnOver}
+                Expanse : {totalExpenseTurnOver}
               </h5>
               <div className="ex-progress-bar">
                 <Progress
@@ -105,6 +110,69 @@ const Analytics = ({ allTransaction }) => {
                   percent={totalExpenseTurnOverPercentage.toFixed(0)}
                 />
               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className="row mt-3 text-center">
+        <div className="col-md-2"></div>
+        <div className="col-md-4">
+          <div className='card'>
+            <div className="card-header">
+              Category wise Income
+            </div>
+            <div className='card-body'>
+              {
+                totalCategories.map((category) => {
+                  const amount = allTransaction.filter(
+                    (transaction) => transaction.type === 'income' && transaction.categories === category
+                  ).reduce((accumulator, transaction) => accumulator + transaction.amount, 0);
+                  console.log(amount)
+                  return (
+                    (amount > 0) &&
+                    <div className='card'>
+                      <div className="card-header">
+                        {category}
+                      </div>
+                      <div className='card-body'>
+                        <Progress
+                          percent={((amount / totalIncomeTurnOver) * 100).toFixed(0)}
+                        />
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className='card'>
+            <div className="card-header">
+              Category wise Expanse
+            </div>
+            <div className='card-body'>
+              {
+                totalCategories.map((category) => {
+                  const amount = allTransaction.filter(
+                    (transaction) => transaction.type === 'expanse' && transaction.categories === category
+                  ).reduce((accumulator, transaction) => accumulator + transaction.amount, 0);
+                  console.log(amount)
+                  return (
+                    (amount > 0) &&
+                    <div className='card'>
+                      <div className="card-header">
+                        {category}
+                      </div>
+                      <div className='card-body'>
+                        <Progress
+                          percent={((amount / totalExpenseTurnOver) * 100).toFixed(0)}
+                        />
+                      </div>
+                    </div>
+                  )
+                })
+              }
             </div>
           </div>
         </div>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import Layout from '../../components/layout/Layout';
-import { Button, Form, Input, message, Modal, Select, Table, DatePicker } from 'antd';
+import { Button, Form, Input, message, Modal, Select, Table, DatePicker} from 'antd';
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
 import moment from 'moment';
-import { PieChartOutlined, TableOutlined } from '@ant-design/icons';
+import { PieChartOutlined, TableOutlined, EditOutlined, DeleteOutlined  } from '@ant-design/icons';
 import Analytics from '../../components/analytics/Analytics';
 
 const { RangePicker } = DatePicker;
@@ -16,11 +16,13 @@ const HomePage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [allTransactionState, setAllTransactionState] = useState([]);
-  const [frequency, setFrequency] = useState('7'); // frequency state here 7 is the days value
+  const [frequency, setFrequency] = useState('365'); // frequency state here 7 is the days value
   const [selectedDate, setSelectedDate] = useState([]);
   const [type, setType] = useState('all');
   const [categories, setCategories] = useState('other');
   const [viewData, setViewData] = useState("table");
+  const [editTable,setEditTable] = useState(null);
+
 
   const showModel = () => {
     setIsModalOpen(true);
@@ -111,7 +113,13 @@ const HomePage = () => {
       dataIndex: 'description'
     },
     {
-      title: 'Actions'
+      title: 'Actions',
+      render: (text, record) => (
+        <div>
+            <EditOutlined onClick={() => showModel()} />
+            <DeleteOutlined className="mx-2" />
+        </div>
+      )
     },
   ]
   return (
@@ -179,7 +187,7 @@ const HomePage = () => {
           }
         </div>
         {/* start of modal code */}
-        <Modal title="Add New Expanse" footer={null} open={isModalOpen} >
+        <Modal title="Add New Expanse" footer={null} open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
           <div className="card">
             <div className="card-body">
               <Form
