@@ -1,4 +1,5 @@
 {
+  "homepage": ".",
   "name": "expense-management-system",
   "version": "1.0.0",
   "description": "Expense Management System in the MERN stack",
