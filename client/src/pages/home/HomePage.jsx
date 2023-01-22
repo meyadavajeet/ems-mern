@@ -22,39 +22,40 @@ const HomePage = () => {
   const [categories, setCategories] = useState('other');
   const [viewData, setViewData] = useState("table");
   const [editable, setEditable] = useState(null);
+  const [form] = Form.useForm();
 
-    //useEffect Hook
-    useEffect(() => {
-      getAllTransactions()
-    }, [frequency, selectedDate, type, categories]);
+  //useEffect Hook
+  useEffect(() => {
+    getAllTransactions()
+  }, [frequency, selectedDate, type, categories]);
 
-       /**
-       * Get all transactions
-       */
-       const getAllTransactions = async () => {
-        try {
-          const user = JSON.parse(localStorage.getItem('user'));
-          // console.log(user._id,'user id');
-          setIsLoading(true);
-          const response = await axios.post(
-            '/api/v1/transaction/all-transaction',
-            {
-              user_id: user._id,
-              frequency,
-              selectedDate,
-              type,
-              categories,
-            }
-          );
-          setIsLoading(false);
-          setAllTransactionState(response.data);
-          console.log(response.data);
-
-        } catch (err) {
-          console.error(err);
-          message.error("Facing issue while fetching data!!");
+  /**
+  * Get all transactions
+  */
+  const getAllTransactions = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      // console.log(user._id,'user id');
+      setIsLoading(true);
+      const response = await axios.post(
+        '/api/v1/transaction/all-transaction',
+        {
+          user_id: user._id,
+          frequency,
+          selectedDate,
+          type,
+          categories,
         }
-      }
+      );
+      setIsLoading(false);
+      setAllTransactionState(response.data);
+      console.log(response.data);
+
+    } catch (err) {
+      console.error(err);
+      message.error("Facing issue while fetching data!!");
+    }
+  }
 
   const showModel = () => {
     setIsModalOpen(true);
@@ -66,7 +67,7 @@ const HomePage = () => {
       const user = JSON.parse(localStorage.getItem('user'));
       setIsLoading(true);
       if (editable) {
-        console.log("values",values);
+        console.log("values", values);
         await axios.post("/api/v1/transaction/edit-transaction", {
           payload: {
             ...values,
@@ -75,6 +76,7 @@ const HomePage = () => {
           transactionId: editable._id,
         });
         setIsLoading(false);
+        // form.resetFields();
         message.success("Transaction updated successfully!!");
         getAllTransactions();
       } else {
@@ -83,6 +85,7 @@ const HomePage = () => {
           user_id: user._id,
         });
         setIsLoading(false);
+        // form.resetFields();
         message.success('Transaction added successfully!!');
       }
       setIsModalOpen(false);
@@ -237,7 +240,9 @@ const HomePage = () => {
                 layout="vertical"
                 onFinish={onFinish}
                 initialValues={editable}
-                onFinishFailed={onFinishFailed}>
+                onFinishFailed={onFinishFailed}
+                form={form}
+              >
                 <Form.Item
                   label="Amount"
                   name="amount"

@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const dotenv = require('dotenv');
 const colors = require('colors');
 const connectDb = require('./config/connectDB');
+const path = require('path');
+
 //config dot env file
 dotenv.config();
 
@@ -18,6 +20,19 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors());
+
+/**
+ * configure static pages for the production deployment
+ */
+app.use(express.static(path.join(__dirname, './client/build')));
+
+app.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, './client/build/index.html'));
+});
+
+/**
+ * // end of configuration for production
+ */
 
 /**
  * Routing section start
