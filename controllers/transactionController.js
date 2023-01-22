@@ -24,7 +24,7 @@ const getAllTransaction = async (req, res) => {
       ...(type !== 'all' && { type }),
       ...(categories !== 'other' && { categories }),
     });
-   return res.status(200).json(transaction);
+    return res.status(200).json(transaction);
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
@@ -36,11 +36,41 @@ const addNewTransaction = async (req, res) => {
   try {
     const newTransaction = new transactionModel(req.body);
     await newTransaction.save();
-    return res.status(200).json(newTransaction);
+    return res.status(201).json(newTransaction);
   } catch (error) {
     console.error(error);
     return res.status(500).json(error);
   }
 }
 
-module.exports = { getAllTransaction, addNewTransaction };
+// edit old transaction callback function
+const editOldTransaction = async (req, res) => {
+  try {
+    let result = await transactionModel.findOneAndUpdate(
+      { _id: req.body.transactionId },
+      req.body.payload,
+    );
+    console.log(result, 'after update queries run on the system');
+    res.status(200).json("Edit Successfully!!");
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json(error);
+  }
+}
+
+
+const deleteTransaction = async (req, res) => {
+  try {
+    await transactionModel.findOneAndDelete({
+      _id: req.body.transactionId
+    });
+    res.status(200).send("Transaction Deleted !!!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).json(err);
+  }
+}
+
+
+
+module.exports = { getAllTransaction, addNewTransaction, editOldTransaction,deleteTransaction };

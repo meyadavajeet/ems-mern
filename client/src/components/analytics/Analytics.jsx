@@ -50,6 +50,7 @@ const Analytics = ({ allTransaction }) => {
 
   return (
     <>
+    <div className="container">
       <div className="row mt-3 text-center">
         {/* Total Transaction */}
         <div className="col-md-2"></div>
@@ -177,6 +178,7 @@ const Analytics = ({ allTransaction }) => {
           </div>
         </div>
       </div>
+    </div>
     </>
   )
 }

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import './homePage.css';
 import Layout from '../../components/layout/Layout';
-import { Button, Form, Input, message, Modal, Select, Table, DatePicker} from 'antd';
+import { Button, Form, Input, message, Modal, Select, Table, DatePicker } from 'antd';
 import axios from 'axios';
 import Spinner from '../../components/Spinner';
 import moment from 'moment';
-import { PieChartOutlined, TableOutlined, EditOutlined, DeleteOutlined  } from '@ant-design/icons';
+import { PieChartOutlined, TableOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import Analytics from '../../components/analytics/Analytics';
 
 const { RangePicker } = DatePicker;
@@ -21,8 +21,40 @@ const HomePage = () => {
   const [type, setType] = useState('all');
   const [categories, setCategories] = useState('other');
   const [viewData, setViewData] = useState("table");
-  const [editTable,setEditTable] = useState(null);
+  const [editable, setEditable] = useState(null);
 
+    //useEffect Hook
+    useEffect(() => {
+      getAllTransactions()
+    }, [frequency, selectedDate, type, categories]);
+
+       /**
+       * Get all transactions
+       */
+       const getAllTransactions = async () => {
+        try {
+          const user = JSON.parse(localStorage.getItem('user'));
+          // console.log(user._id,'user id');
+          setIsLoading(true);
+          const response = await axios.post(
+            '/api/v1/transaction/all-transaction',
+            {
+              user_id: user._id,
+              frequency,
+              selectedDate,
+              type,
+              categories,
+            }
+          );
+          setIsLoading(false);
+          setAllTransactionState(response.data);
+          console.log(response.data);
+
+        } catch (err) {
+          console.error(err);
+          message.error("Facing issue while fetching data!!");
+        }
+      }
 
   const showModel = () => {
     setIsModalOpen(true);
@@ -33,14 +65,29 @@ const HomePage = () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
       setIsLoading(true);
-      await axios.post('/transaction/add-transaction', {
-        ...values,
-        user_id: user._id,
-      });
-      message.success('Transaction added successfully!!');
-      setIsLoading(false);
+      if (editable) {
+        console.log("values",values);
+        await axios.post("/api/v1/transaction/edit-transaction", {
+          payload: {
+            ...values,
+            user_id: user._id,
+          },
+          transactionId: editable._id,
+        });
+        setIsLoading(false);
+        message.success("Transaction updated successfully!!");
+        getAllTransactions();
+      } else {
+        await axios.post('/api/v1/transaction/add-transaction', {
+          ...values,
+          user_id: user._id,
+        });
+        setIsLoading(false);
+        message.success('Transaction added successfully!!');
+      }
       setIsModalOpen(false);
-
+      setEditable(null);
+      getAllTransactions();
     } catch (error) {
       setIsLoading(false);
       message.error("Failed to add transaction");
@@ -51,37 +98,23 @@ const HomePage = () => {
   }
 
 
-  //useEffect Hook
-  useEffect(() => {
-    /**
-     * Get all transactions
-     */
-    const getAllTransactions = async () => {
-      try {
-        const user = JSON.parse(localStorage.getItem('user'));
-        // console.log(user._id,'user id');
-        setIsLoading(true);
-        const response = await axios.post(
-          '/transaction/all-transaction',
-          {
-            user_id: user._id,
-            frequency,
-            selectedDate,
-            type,
-            categories,
-          }
-        );
-        setIsLoading(false);
-        setAllTransactionState(response.data);
-        console.log(response.data);
 
-      } catch (err) {
-        console.error(err);
-        message.error("Facing issue while fetching data!!");
-      }
+  //delete handler
+  const handleDelete = async (record) => {
+    try {
+      setIsLoading(true);
+      await axios.post("/api/v1/transaction/delete-transaction", {
+        transactionId: record._id,
+      });
+      setIsLoading(false);
+      message.success("Transaction Deleted!!!");
+      getAllTransactions();
+    } catch (error) {
+      setIsLoading(false)
+      console.log(error);
+      message.error("Unable to delete!!!");
     }
-    getAllTransactions()
-  }, [frequency, selectedDate, type, categories]);
+  }
 
   /**
    * Table in ant design
@@ -116,8 +149,15 @@ const HomePage = () => {
       title: 'Actions',
       render: (text, record) => (
         <div>
-            <EditOutlined onClick={() => showModel()} />
-            <DeleteOutlined className="mx-2" />
+          <EditOutlined onClick={() => {
+            setEditable(record)
+            setIsModalOpen(true)
+          }} />
+          <DeleteOutlined className="mx-2"
+            onClick={() => {
+              handleDelete(record);
+            }}
+          />
         </div>
       )
     },
@@ -187,12 +227,16 @@ const HomePage = () => {
           }
         </div>
         {/* start of modal code */}
-        <Modal title="Add New Expanse" footer={null} open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
+        <Modal title={editable ? "Edit Transaction" : "Add New Transaction"}
+          footer={null}
+          open={isModalOpen}
+          onCancel={() => setIsModalOpen(false)}>
           <div className="card">
             <div className="card-body">
               <Form
                 layout="vertical"
                 onFinish={onFinish}
+                initialValues={editable}
                 onFinishFailed={onFinishFailed}>
                 <Form.Item
                   label="Amount"
